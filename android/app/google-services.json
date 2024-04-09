@@ -1,0 +1,49 @@
+{
+  "project_info": {
+    "project_number": "188701239795",
+    "firebase_url": "https://smartrecycle-a0d95-default-rtdb.firebaseio.com",
+    "project_id": "smartrecycle-a0d95",
+    "storage_bucket": "smartrecycle-a0d95.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:188701239795:android:bf659674ea9a7884c80a86",
+        "android_client_info": {
+          "package_name": "com.example.smartrecycle"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDXPz9h_hVZuOQDXwuusSRQPJ-F_w98rqo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:188701239795:android:6e60c604cd66dbe6c80a86",
+        "android_client_info": {
+          "package_name": "com.example.untitled2"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDXPz9h_hVZuOQDXwuusSRQPJ-F_w98rqo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
