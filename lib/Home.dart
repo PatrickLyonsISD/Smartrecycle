@@ -57,7 +57,7 @@ class _HomeScreenState extends State<HomeScreen> {
       final Map<dynamic, dynamic> valueMap = Map<dynamic, dynamic>.from(snapshot.value as Map);
       final currentStatus = valueMap['status'].toString();
 
-      final newStatus = currentStatus == 'full' ? 'empty' : 'full';
+      final newStatus = currentStatus == 'full' ? 'can be used' : 'full';
 
       await binStatusRef.set({
         'status': newStatus,
