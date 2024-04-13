@@ -1,6 +1,8 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:fl_chart/fl_chart.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -11,6 +13,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final DatabaseReference _database = FirebaseDatabase.instance.ref();
   final User? user = FirebaseAuth.instance.currentUser;
   Map<String, int> objects = {};
+  List<PieChartSectionData> _sections = [];
 
   @override
   void initState() {
@@ -23,10 +26,22 @@ class _HomeScreenState extends State<HomeScreen> {
 
     final snapshot = await objectsRef.get();
     if (snapshot.exists && snapshot.value != null) {
-      setState(() {
-        objects = Map<String, int>.from(snapshot.value as Map);
-      });
+      final fetchedObjects = Map<String, int>.from(snapshot.value as Map);
+      _generatePieChartSections(fetchedObjects);
     }
+  }
+
+  void _generatePieChartSections(Map<String, int> objectsData) {
+    final data = objectsData.entries.map((entry) => PieChartSectionData(
+      color: Colors.primaries[Random().nextInt(Colors.primaries.length)],
+      value: entry.value.toDouble(),
+      title: '${entry.key}: ${entry.value}',
+      radius: 100,
+    )).toList();
+
+    setState(() {
+      _sections = data;
+    });
   }
 
   void _toggleBinStatus() async {
@@ -35,14 +50,14 @@ class _HomeScreenState extends State<HomeScreen> {
       return;
     }
 
-    final binStatusRef = _database.child('bin_status/${user?.uid}');
+    final binStatusRef = _database.child('bin_status/${user!.uid}');
 
     final snapshot = await binStatusRef.get();
     if (snapshot.exists && snapshot.value != null) {
       final Map<dynamic, dynamic> valueMap = Map<dynamic, dynamic>.from(snapshot.value as Map);
       final currentStatus = valueMap['status'].toString();
 
-      final newStatus = currentStatus == 'full' ? 'can be used ' : 'full';
+      final newStatus = currentStatus == 'full' ? 'empty' : 'full';
 
       await binStatusRef.set({
         'status': newStatus,
@@ -75,11 +90,17 @@ class _HomeScreenState extends State<HomeScreen> {
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 20),
-            if (objects.isNotEmpty)
-              ...objects.entries.map((entry) => Text("${entry.key}: ${entry.value}")),
+            Expanded(
+              child: PieChart(PieChartData(
+                centerSpaceRadius: 60,
+                borderData: FlBorderData(show: false),
+                sectionsSpace: 0,
+                sections: _sections,
+              )),
+            ),
             SizedBox(height: 20),
             ElevatedButton(
-              onPressed: _toggleBinStatus,
+              onPressed: _toggleBinStatus, // Call the function to update the bin status
               child: Text('Toggle Bin Status'),
             ),
           ],
