@@ -14,11 +14,30 @@ class _HomeScreenState extends State<HomeScreen> {
   final User? user = FirebaseAuth.instance.currentUser;
   Map<String, int> objects = {};
   List<PieChartSectionData> _sections = [];
+  String binStatus = 'Unknown';
 
   @override
   void initState() {
     super.initState();
+    _fetchBinStatus();
     _fetchObjectsData();
+  }
+
+  void _fetchBinStatus() async {
+    if (user == null) {
+      print('No user logged in!');
+      return;
+    }
+
+    final binStatusRef = _database.child('bin_status/${user!.uid}');
+
+    binStatusRef.onValue.listen((event) {
+      final data = event.snapshot.value as Map<dynamic, dynamic>?; // Cast to a map
+      final status = data?['status'] ?? 'Unknown'; // Use the map to access 'status'
+      setState(() {
+        binStatus = status.toString();
+      });
+    });
   }
 
   void _fetchObjectsData() async {
@@ -30,6 +49,8 @@ class _HomeScreenState extends State<HomeScreen> {
       _generatePieChartSections(fetchedObjects);
     }
   }
+
+
 
   void _generatePieChartSections(Map<String, int> objectsData) {
     final data = objectsData.entries.map((entry) => PieChartSectionData(
@@ -90,6 +111,11 @@ class _HomeScreenState extends State<HomeScreen> {
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 20),
+            Text(
+              'Bin Status: $binStatus',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: binStatus == 'full' ? Colors.red : Colors.green),
+            ),
+            SizedBox(height: 20),
             Expanded(
               child: PieChart(PieChartData(
                 centerSpaceRadius: 60,
@@ -100,7 +126,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             SizedBox(height: 20),
             ElevatedButton(
-              onPressed: _toggleBinStatus, // Call the function to update the bin status
+              onPressed: _toggleBinStatus,
               child: Text('Toggle Bin Status'),
             ),
           ],
